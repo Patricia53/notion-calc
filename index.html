@@ -1,7 +1,10 @@
+<html>
+  <head>
 <div id="wrapper">
   <div id="app"></div>
 </div>
 
+    <style>
 html {
   box-sizing: border-box;
 }
@@ -138,7 +141,9 @@ button:active {
 .calculator .operator-keys {
   background:  linear-gradient(to bottom, rgba(252,156,23,1) 0%, rgba(247,126,27,1) 100%);
 }
-
+    </style>
+    <body>
+    <script>
 const PointTarget = ReactPoint.PointTarget
 
 class AutoScalingText extends React.Component {
@@ -415,3 +420,7 @@ ReactDOM.render(
   <Calculator/>,
   document.getElementById('app')
 )
+      </script>
+    </body>
+    </html>
+ 
