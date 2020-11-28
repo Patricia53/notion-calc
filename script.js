@@ -1,128 +1,275 @@
-$(document).ready(function() {
-  var sum = null;
-  var operation = null;
+function _extends() {_extends = Object.assign || function (target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i];for (var key in source) {if (Object.prototype.hasOwnProperty.call(source, key)) {target[key] = source[key];}}}return target;};return _extends.apply(this, arguments);}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}const PointTarget = ReactPoint.PointTarget;
 
-  $("#1-button").click(function() {
-    insertToDisplay(1)
-  });
-  $("#2-button").click(function() {
-    insertToDisplay(2)
-  });
-  $("#3-button").click(function() {
-    insertToDisplay(3)
-  });
-  $("#4-button").click(function() {
-    insertToDisplay(4)
-  });
-  $("#5-button").click(function() {
-    insertToDisplay(5)
-  });
-  $("#6-button").click(function() {
-    insertToDisplay(6)
-  });
-  $("#7-button").click(function() {
-    insertToDisplay(7)
-  });
-  $("#8-button").click(function() {
-    insertToDisplay(8)
-  });
-  $("#9-button").click(function() {
-    insertToDisplay(9)
-  });
+class AutoScalingText extends React.Component {constructor(...args) {super(...args);_defineProperty(this, "state",
+    {
+      scale: 1 });}
 
-  $("#0-button").click(function() {
-    // avoid entering numbers like 0000.5814, although 0234 can still be entered
-    if (getDisplayValue() !== "0") {
-      insertToDisplay(0);
+
+  componentDidUpdate() {
+    const { scale } = this.state;
+
+    const node = this.node;
+    const parentNode = node.parentNode;
+
+    const availableWidth = parentNode.offsetWidth;
+    const actualWidth = node.offsetWidth;
+    const actualScale = availableWidth / actualWidth;
+
+    if (scale === actualScale)
+    return;
+
+    if (actualScale < 1) {
+      this.setState({ scale: actualScale });
+    } else if (scale < 1) {
+      this.setState({ scale: 1 });
     }
-  });
-
-  $("#dot-button").click(function() {
-    // insert a dot if the dot doesn't already exist in the field
-    if ($("#display").text().indexOf(".") < 0) {
-      insertToDisplay(".");
-    }
-  });
-
-  $("#ce-button").click(function() {
-    clearDisplay();
-  });
-
-  $("#ac-button").click(function() {
-    clearDisplay();
-    sum = null;
-    operation = null;
-  });
-
-  //
-  // operation buttons
-  //
-  $("#plus-button").click(function() {
-    parseOperation();
-    operation = "plus";
-  });
-
-  $("#minus-button").click(function() {
-    parseOperation();
-    operation = "minus";
-  });
-
-  $("#multiply-button").click(function() {
-    parseOperation();
-    operation = "multiply";
-  });
-
-  $("#divide-button").click(function() {
-    parseOperation();
-    operation = "divide";
-  });
-
-  $("#equals-button").click(function() {
-    parseOperation();
-    operation = null;
-    // avoid odd-looking rounding errors
-    insertToDisplay(parseFloat((sum).toFixed(10)));  
-    sum = null;
-  });
-
-  //
-  // display functions
-  //
-  function insertToDisplay(x) {
-    $("#display").text($("#display").text() + x);
   }
 
-  function clearDisplay() {
-    $("#display").text("");
-  }
+  render() {
+    const { scale } = this.state;
 
-  function getDisplayValue() {
-    return parseFloat($("#display").text());
-  }
+    return (
+      React.createElement("div", {
+        className: "auto-scaling-text",
+        style: { transform: `scale(${scale},${scale})` },
+        ref: node => this.node = node },
+      this.props.children));
 
-  function parseOperation() {
-    console.log("sum", sum);
-    if (sum === null) {
-      sum = getDisplayValue();
-    } else {
-      // switch for operation
-      switch (operation) {
-        case "plus":
-          sum += getDisplayValue();
-          break;
-        case "minus":
-          sum -= getDisplayValue();
-          break;
-        case "multiply":
-          sum *= getDisplayValue();
-          break;
-        case "divide":
-          sum /= getDisplayValue();
-          break;
+  }}
+
+
+class CalculatorDisplay extends React.Component {
+  render() {
+    const { value, ...props } = this.props;
+
+    const language = navigator.language || 'en-US';
+    let formattedValue = parseFloat(value).toLocaleString(language, {
+      useGrouping: true,
+      maximumFractionDigits: 6 });
+
+
+    // Add back missing .0 in e.g. 12.0
+    const match = value.match(/\.\d*?(0*)$/);
+
+    if (match)
+    formattedValue += /[1-9]/.test(match[0]) ? match[1] : match[0];
+
+    return (
+      React.createElement("div", _extends({}, props, { className: "calculator-display" }),
+      React.createElement(AutoScalingText, null, formattedValue)));
+
+
+  }}
+
+
+class CalculatorKey extends React.Component {
+  render() {
+    const { onPress, className, ...props } = this.props;
+
+    return (
+      React.createElement(PointTarget, { onPoint: onPress },
+      React.createElement("button", _extends({ className: `calculator-key ${className}` }, props))));
+
+
+  }}
+
+
+const CalculatorOperations = {
+  '/': (prevValue, nextValue) => prevValue / nextValue,
+  '*': (prevValue, nextValue) => prevValue * nextValue,
+  '+': (prevValue, nextValue) => prevValue + nextValue,
+  '-': (prevValue, nextValue) => prevValue - nextValue,
+  '=': (prevValue, nextValue) => nextValue };
+
+
+class Calculator extends React.Component {constructor(...args) {super(...args);_defineProperty(this, "state",
+    {
+      value: null,
+      displayValue: '0',
+      operator: null,
+      waitingForOperand: false });_defineProperty(this, "handleKeyDown",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    event => {
+      let { key } = event;
+
+      if (key === 'Enter')
+      key = '=';
+
+      if (/\d/.test(key)) {
+        event.preventDefault();
+        this.inputDigit(parseInt(key, 10));
+      } else if (key in CalculatorOperations) {
+        event.preventDefault();
+        this.performOperation(key);
+      } else if (key === '.') {
+        event.preventDefault();
+        this.inputDot();
+      } else if (key === '%') {
+        event.preventDefault();
+        this.inputPercent();
+      } else if (key === 'Backspace') {
+        event.preventDefault();
+        this.clearLastChar();
+      } else if (key === 'Clear') {
+        event.preventDefault();
+
+        if (this.state.displayValue !== '0') {
+          this.clearDisplay();
+        } else {
+          this.clearAll();
+        }
       }
-    }
+    });}clearAll() {this.setState({ value: null, displayValue: '0', operator: null, waitingForOperand: false });}clearDisplay() {this.setState({ displayValue: '0' });}clearLastChar() {const { displayValue } = this.state;this.setState({ displayValue: displayValue.substring(0, displayValue.length - 1) || '0' });}toggleSign() {const { displayValue } = this.state;const newValue = parseFloat(displayValue) * -1;this.setState({ displayValue: String(newValue) });}inputPercent() {const { displayValue } = this.state;const currentValue = parseFloat(displayValue);if (currentValue === 0) return;const fixedDigits = displayValue.replace(/^-?\d*\.?/, '');const newValue = parseFloat(displayValue) / 100;this.setState({ displayValue: String(newValue.toFixed(fixedDigits.length + 2)) });}inputDot() {const { displayValue } = this.state;if (!/\./.test(displayValue)) {this.setState({ displayValue: displayValue + '.', waitingForOperand: false });}}inputDigit(digit) {const { displayValue, waitingForOperand } = this.state;if (waitingForOperand) {this.setState({ displayValue: String(digit), waitingForOperand: false });} else {this.setState({ displayValue: displayValue === '0' ? String(digit) : displayValue + digit });}}performOperation(nextOperator) {const { value, displayValue, operator } = this.state;const inputValue = parseFloat(displayValue);if (value == null) {this.setState({ value: inputValue });} else if (operator) {const currentValue = value || 0;const newValue = CalculatorOperations[operator](currentValue, inputValue);this.setState({ value: newValue, displayValue: String(newValue) });}this.setState({ waitingForOperand: true, operator: nextOperator });}
 
-    clearDisplay();
-    //operation = null;
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyDown);
   }
-});
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyDown);
+  }
+
+  render() {
+    const { displayValue } = this.state;
+
+    const clearDisplay = displayValue !== '0';
+    const clearText = clearDisplay ? 'C' : 'AC';
+
+    return (
+      React.createElement("div", { className: "calculator" },
+      React.createElement(CalculatorDisplay, { value: displayValue }),
+      React.createElement("div", { className: "calculator-keypad" },
+      React.createElement("div", { className: "input-keys" },
+      React.createElement("div", { className: "function-keys" },
+      React.createElement(CalculatorKey, { className: "key-clear", onPress: () => clearDisplay ? this.clearDisplay() : this.clearAll() }, clearText),
+      React.createElement(CalculatorKey, { className: "key-sign", onPress: () => this.toggleSign() }, "\xB1"),
+      React.createElement(CalculatorKey, { className: "key-percent", onPress: () => this.inputPercent() }, "%")),
+
+      React.createElement("div", { className: "digit-keys" },
+      React.createElement(CalculatorKey, { className: "key-0", onPress: () => this.inputDigit(0) }, "0"),
+      React.createElement(CalculatorKey, { className: "key-dot", onPress: () => this.inputDot() }, "\u25CF"),
+      React.createElement(CalculatorKey, { className: "key-1", onPress: () => this.inputDigit(1) }, "1"),
+      React.createElement(CalculatorKey, { className: "key-2", onPress: () => this.inputDigit(2) }, "2"),
+      React.createElement(CalculatorKey, { className: "key-3", onPress: () => this.inputDigit(3) }, "3"),
+      React.createElement(CalculatorKey, { className: "key-4", onPress: () => this.inputDigit(4) }, "4"),
+      React.createElement(CalculatorKey, { className: "key-5", onPress: () => this.inputDigit(5) }, "5"),
+      React.createElement(CalculatorKey, { className: "key-6", onPress: () => this.inputDigit(6) }, "6"),
+      React.createElement(CalculatorKey, { className: "key-7", onPress: () => this.inputDigit(7) }, "7"),
+      React.createElement(CalculatorKey, { className: "key-8", onPress: () => this.inputDigit(8) }, "8"),
+      React.createElement(CalculatorKey, { className: "key-9", onPress: () => this.inputDigit(9) }, "9"))),
+
+
+      React.createElement("div", { className: "operator-keys" },
+      React.createElement(CalculatorKey, { className: "key-divide", onPress: () => this.performOperation('/') }, "\xF7"),
+      React.createElement(CalculatorKey, { className: "key-multiply", onPress: () => this.performOperation('*') }, "\xD7"),
+      React.createElement(CalculatorKey, { className: "key-subtract", onPress: () => this.performOperation('-') }, "\u2212"),
+      React.createElement(CalculatorKey, { className: "key-add", onPress: () => this.performOperation('+') }, "+"),
+      React.createElement(CalculatorKey, { className: "key-equals", onPress: () => this.performOperation('=') }, "=")))));
+
+
+
+
+  }}
+
+
+ReactDOM.render(
+React.createElement(Calculator, null),
+document.getElementById('app'));
